@@ -99,7 +99,7 @@ if st.session_state.tappe:
             if modalita == "Gestione URGENZE" and scelta_inizio:
                 # Separiamo urgenze e standard
                 urgenti = [(n, s) for n, s, u in tappe_lavoro if u]
-                standard = [(n, s) for n, s, u in tappe_nodi if not u] # Nota: risolto typo qui
+                standard = [(n, s) for n, s, u in tappe_lavoro if not u] # Nota: risolto typo qui
                 
                 # Prendiamo il primo scelto
                 primo_tupla = next(item for item in urgenti if item[1] == scelta_inizio)
