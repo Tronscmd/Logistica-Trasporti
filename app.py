@@ -10,10 +10,11 @@ st.title("♻️ Ottimizzatore con Discariche Salvate")
 # --- 1. DATABASE DISCARICHE FISSE ---
 # Aggiungi qui tutte le discariche che vuoi. Basta seguire il formato.
 DISCARICHE_FISSE = [
-    {"id": "Discarica Bari 1", "lat": 41.11, "lon": 16.83},
-    {"id": "Discarica Taranto A", "lat": 40.47, "lon": 17.24},
-    {"id": "Discarica Foggia Sud", "lat": 41.43, "lon": 15.55},
-    {"id": "Impianto Brindisi", "lat": 40.63, "lon": 17.93}
+    {"id": "AMB", "lat": 41.11, "lon": 16.83},
+    {"id": "NET", "lat": 40.47, "lon": 17.24},
+    {"id": "DIM", "lat": 41.43, "lon": 15.55},
+    {"id": "APU", "lat": 40.63, "lon": 17.93},
+    {"id": "MTL", "lat": 40.63, "lon": 17.93}
 ]
 
 @st.cache_resource
