@@ -10,8 +10,10 @@ import networkx as nx
 import pandas as pd
 
 # --- CONFIGURAZIONE ---
-st.set_page_config(page_title="Copyright © 2026 VMMG", layout="wide")
+st.set_page_config(page_title="Gestione Trasporti v4.2", layout="wide")
 st.title("🚚 Gestione Trasporti e Smaltimento v4.2")
+st.caption("Copyright © 2026 VMMG")
+st.divider()
 
 # --- 1. DATABASE DISCARICHE FISSE ---
 # Aggiungi qui tutte le discariche che vuoi. Basta seguire il formato.
@@ -122,3 +124,5 @@ if st.session_state.tappe_clienti or DISCARICHE_FISSE:
 
                 st.success(f"✅ Percorso ottimizzato verso {discarica_scelta_id}: {km_totali/1000:.2f} km")
                 st.table(percorso_finale)
+
+                st.markdown("<br><hr><center>Copyright © 2026 VMMG</center>", unsafe_allow_html=True)
