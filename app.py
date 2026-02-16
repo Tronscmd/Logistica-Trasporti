@@ -74,7 +74,7 @@ if st.session_state.tappe_clienti or DISCARICHE_FISSE:
         st.subheader("👥 Clienti del giorno")
         if st.session_state.tappe_clienti:
             df_c = pd.DataFrame(st.session_state.tappe_clienti)
-            st.table(df_c[['ID']])
+            st.table(df_c[['id']])
             urgenti = st.multiselect("Segna URGENTI:", options=df_c['id'].tolist())
         else:
             st.info("Nessun cliente inserito.")
