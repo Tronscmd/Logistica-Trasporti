@@ -35,19 +35,31 @@ G = carica_mappa()
 if 'tappe_clienti' not in st.session_state:
     st.session_state.tappe_clienti = []
 
-# --- SIDEBAR: INSERIMENTO SOLO CLIENTI ---
+# --- SIDEBAR: INSERIMENTO CLIENTI ---
 st.sidebar.header("📍 Inserimento Clienti")
-seriale = st.sidebar.text_input("Nome/ID Cliente")
-coord = st.sidebar.text_input("Coordinate Cliente (Lat, Lon)")
 
-if st.sidebar.button("➕ Aggiungi Cliente"):
-    if seriale and coord:
-        try:
-            lat, lon = map(float, coord.replace(" ", "").split(","))
-            st.session_state.tappe_clienti.append({"id": seriale, "lat": lat, "lon": lon, "tipo": "Cliente"})
-            st.sidebar.success(f"Cliente {seriale} aggiunto!")
-        except:
-            st.sidebar.error("Errore formato coordinate!")
+# Usiamo un form con clear_on_submit=True
+with st.sidebar.form("form_inserimento", clear_on_submit=True):
+    seriale = st.text_input("Nome/ID Cliente")
+    coord = st.text_input("Coordinate Cliente (Lat, Lon)")
+    btn_aggiungi = st.form_submit_button("➕ Aggiungi Cliente")
+
+    if btn_aggiungi:
+        if seriale and coord:
+            try:
+                lat, lon = map(float, coord.replace(" ", "").split(","))
+                st.session_state.tappe_clienti.append({
+                    "id": seriale, 
+                    "lat": lat, 
+                    "lon": lon, 
+                    "tipo": "Cliente"
+                })
+                st.sidebar.success(f"Cliente {seriale} aggiunto!")
+                # Nota: qui non serve st.rerun(), il form pulisce tutto da solo
+            except:
+                st.sidebar.error("Errore formato coordinate!")
+        else:
+            st.sidebar.warning("Inserisci tutti i dati!")
 
 if st.sidebar.button("🗑️ Svuota Lista Clienti"):
     st.session_state.tappe_clienti = []
