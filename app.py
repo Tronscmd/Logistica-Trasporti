@@ -16,7 +16,6 @@ st.caption("Copyright © 2026 VMMG")
 st.divider()
 
 # --- 1. DATABASE DISCARICHE FISSE ---
-# Aggiungi qui tutte le discariche che vuoi. Basta seguire il formato.
 DISCARICHE_FISSE = [
     {"id": "AMB", "lat": 41.09647057134329, "lon": 16.738474937175116},
     {"id": "NET", "lat": 41.089966857437396, "lon": 16.806883067859623},
@@ -31,14 +30,12 @@ def carica_mappa():
 
 G = carica_mappa()
 
-# Inizializziamo le tappe con le discariche fisse se la lista è vuota
 if 'tappe_clienti' not in st.session_state:
     st.session_state.tappe_clienti = []
 
 # --- SIDEBAR: INSERIMENTO CLIENTI ---
 st.sidebar.header("📍 Inserimento Clienti")
 
-# Usiamo un form con clear_on_submit=True
 with st.sidebar.form("form_inserimento", clear_on_submit=True):
     seriale = st.text_input("Nome/ID Cliente")
     coord = st.text_input("Coordinate Cliente (Lat, Lon)")
@@ -55,7 +52,6 @@ with st.sidebar.form("form_inserimento", clear_on_submit=True):
                     "tipo": "Cliente"
                 })
                 st.sidebar.success(f"Cliente {seriale} aggiunto!")
-                # Nota: qui non serve st.rerun(), il form pulisce tutto da solo
             except:
                 st.sidebar.error("Errore formato coordinate!")
         else:
@@ -73,16 +69,23 @@ if st.session_state.tappe_clienti or DISCARICHE_FISSE:
     with col1:
         st.subheader("👥 Clienti del giorno")
         if st.session_state.tappe_clienti:
-            df_c = pd.DataFrame(st.session_state.tappe_clienti)
-            st.table(df_c[['id']])
-            urgenti = st.multiselect("Segna URGENTI:", options=df_c['id'].tolist())
+            # --- MODIFICA QUI: Visualizzazione con tasto elimina ---
+            for i, cliente in enumerate(st.session_state.tappe_clienti):
+                c_col1, c_col2 = st.columns([0.85, 0.15])
+                c_col1.write(f"📍 {cliente['id']}")
+                if c_col2.button("🗑️", key=f"del_{i}"):
+                    st.session_state.tappe_clienti.pop(i)
+                    st.rerun()
+            
+            # Prepariamo la lista per il multiselect delle urgenze
+            nomi_clienti = [c['id'] for c in st.session_state.tappe_clienti]
+            urgenti = st.multiselect("Segna URGENTI:", options=nomi_clienti)
         else:
             st.info("Nessun cliente inserito.")
             urgenti = []
 
     with col2:
         st.subheader("🏭 Destinazione Smaltimento")
-        # Menu a tendina con le discariche salvate nel codice
         nomi_discariche = [d['id'] for d in DISCARICHE_FISSE]
         discarica_scelta_id = st.selectbox("Seleziona la DISCARICA per questo viaggio:", options=nomi_discariche)
 
@@ -92,15 +95,12 @@ if st.session_state.tappe_clienti or DISCARICHE_FISSE:
             st.warning("Inserisci almeno un cliente!")
         else:
             with st.spinner("Calcolo in corso..."):
-                # Magazzino
                 partenza_gps = (40.88662985769151, 16.852016478389977)
                 nodo_attuale = ox.distance.nearest_nodes(G, partenza_gps[1], partenza_gps[0])
                 
-                # Dati Discarica Scelta
                 d_info = next(d for d in DISCARICHE_FISSE if d['id'] == discarica_scelta_id)
                 nodo_discarica = ox.distance.nearest_nodes(G, d_info['lon'], d_info['lat'])
 
-                # Prepariamo i nodi clienti
                 clienti_lavoro = []
                 for c in st.session_state.tappe_clienti:
                     n = ox.distance.nearest_nodes(G, c['lon'], c['lat'])
@@ -119,7 +119,7 @@ if st.session_state.tappe_clienti or DISCARICHE_FISSE:
                     percorso_finale.append({"Punto": prossimo[1], "Tipo": "RITIRO URGENTE"})
                     urgenti_lavoro.remove(prossimo)
 
-                # 2. Standard (verso la discarica)
+                # 2. Standard
                 standard_lavoro = [c for c in clienti_lavoro if not c[2]]
                 while standard_lavoro:
                     prossimo = min(standard_lavoro, key=lambda x: nx.shortest_path_length(G, nodo_attuale, x[0], weight='length'))
@@ -129,7 +129,7 @@ if st.session_state.tappe_clienti or DISCARICHE_FISSE:
                     percorso_finale.append({"Punto": prossimo[1], "Tipo": "RITIRO"})
                     standard_lavoro.remove(prossimo)
 
-                # 3. Chiusura in Discarica
+                # 3. Discarica
                 dist_f = nx.shortest_path_length(G, nodo_attuale, nodo_discarica, weight='length')
                 km_totali += dist_f
                 percorso_finale.append({"Punto": discarica_scelta_id, "Tipo": "SCARICO FINALE"})
