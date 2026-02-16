@@ -1,11 +1,17 @@
+# ---------------------------------------------------------
+# Progetto: Ottimizzatore Trasporti Logistico Puglia & Basilicata
+# Autore:   Mirko Giovinazzo, Vito Manzari
+# Versione: 4.2
+# Copyright © 2026 Tutti i diritti riservati.
+# ---------------------------------------------------------
 import streamlit as st
 import osmnx as ox
 import networkx as nx
 import pandas as pd
 
 # --- CONFIGURAZIONE ---
-st.set_page_config(page_title="VMMG Smaltimento v5.3", layout="wide")
-st.title("♻️ Ottimizzatore con Discariche Salvate")
+st.set_page_config(page_title="Copyright © 2026 VMMG", layout="wide")
+st.title("🚚 Gestione Trasporti e Smaltimento v4.2")
 
 # --- 1. DATABASE DISCARICHE FISSE ---
 # Aggiungi qui tutte le discariche che vuoi. Basta seguire il formato.
